@@ -1,0 +1,3 @@
+[submodule "sprint5_apirest"]
+	path = sprint5_apirest
+	url = https://github.com/cassiopereira1984/sprint5_apirest.git
