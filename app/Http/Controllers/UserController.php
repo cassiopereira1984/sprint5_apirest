@@ -156,6 +156,7 @@ class UserController extends Controller
 
         $winner = null;
         $maxWins = 0;
+        $ranking = [];
 
         foreach ($users as $user) {
             $wins = $user->games->where('win', true)->count();
@@ -163,14 +164,20 @@ class UserController extends Controller
             if ($wins > $maxWins) {
                 $maxWins = $wins;
                 $winner = $user;
+                $ranking[] = [$winner, $maxWins];
             }
         }
 
-        if ($winner) {
+        $winsArray = array_column($ranking, 'maxWins');
+
+        array_multisort($winsArray, SORT_DESC, $ranking);
+
+        if ($ranking) {
             return response()->json([
-                'winner' => [
-                    'name' => $winner->name,
-                    'wins' => $maxWins,
+                'winners' => [
+                    //'name' => $winner->name,
+                    //'wins' => $maxWins,
+                    'ranking' => $ranking,
                 ],
                 'message' => 'Request successful',
             ], 200);

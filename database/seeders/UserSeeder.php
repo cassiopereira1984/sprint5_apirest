@@ -18,8 +18,7 @@ class UserSeeder extends Seeder
             'name' => 'Cassio',
             'email' => 'cassio@admin.com',
             'email_verified_at' => now(),
-            'password' => 'cassio1234',
-            'remember_token' => Str::random(10),
+            'password' => bcrypt('cassio1234')
         ])->assignRole('admin');
     }
 }
