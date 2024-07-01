@@ -40,7 +40,7 @@ class GameController extends Controller
         return response()->json([
             'message' => 'Game created successfully',
             'game' => [
-                'user_id' => $game->user_id,
+                'user_name' => $user->name,
                 'die1' => $game->die1,
                 'die2' => $game->die2,
                 'win' => $game->win,
