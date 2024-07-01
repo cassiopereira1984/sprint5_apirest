@@ -5,14 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 use App\Http\Controllers\Controller;
-use Illuminate\Validation\Rules\Password;
-use Illuminate\Http\JsonResponse;
-use Laravel\Passport\HasApiTokens;
+
 use Illuminate\Support\Facades\Validator;
 
 
@@ -21,17 +15,14 @@ class UserController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'nullable|string|unique:users,name|max:255', //add unique.
+            'name' => 'nullable|string|unique:users,name|max:255',
             'email' => 'required|string|email|unique:users',
-            'password' => 'required|min:6', //|confirmed
-            //'role' => 'required|string|in:admin,user',
+            'password' => 'required|min:6',
         ]);
 
         if($request['name'] == null) {
             $request['name'] = 'Anonymous';
         }
-
-        //$name = $request->input('name', 'anonymous');
         
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
@@ -40,13 +31,10 @@ class UserController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password), //$request->password, //Hash::make($request->password),
+            'password' => bcrypt($request->password),
         ])->assignRole("user");
 
-        //$roles = $user->getRoleNames();
-
         return response()->json(['message' => 'Successfully created user!',
-        //'roles' => $roles,
         ], 201);
     }
 
@@ -76,20 +64,6 @@ class UserController extends Controller
                 'message' => 'Unauthorized'
             ], 401);
         }
-    
-        // Obtener el usuario autenticado
-        // $user = $request->user();
-    
-        // // Generar un token de acceso personal
-        // $tokenResult = $user->createToken('Personal Access Token');
-        // $accessToken = $tokenResult->accessToken;
-    
-        // // Devolver una respuesta JSON exitosa con el token de acceso
-        // return response()->json([
-        //     'message' => 'Login Successful',
-        //     'token' => $accessToken,
-        //     'token_type' => 'Bearer',
-        // ], 200);
     }
 
     public function show(Request $request)

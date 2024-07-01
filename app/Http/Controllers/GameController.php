@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
 
 class GameController extends Controller
 {
@@ -38,7 +37,6 @@ class GameController extends Controller
         $game->win = $diceResult['win'];;
         $game->save();
     
-        // Devuelve la respuesta JSON con la estructura esperada
         return response()->json([
             'message' => 'Game created successfully',
             'game' => [
@@ -56,7 +54,6 @@ class GameController extends Controller
         $dice2 = rand(1, 6);
         $win = ($dice1 + $dice2) === 7;
     
-        // Devuelve la respuesta JSON con la estructura esperada
         return [
                 'dice1' => $dice1,
                 'dice2' => $dice2,
