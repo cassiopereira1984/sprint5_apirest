@@ -21,13 +21,17 @@ class UserController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'nullable|string|max:255',
+            'name' => 'nullable|string|unique:users,name|max:255', //add unique.
             'email' => 'required|string|email|unique:users',
             'password' => 'required|min:6', //|confirmed
-            'role' => 'required|string|in:admin,user',
+            //'role' => 'required|string|in:admin,user',
         ]);
 
-        $name = $request->input('name', 'anonymous');
+        if($request['name'] == null) {
+            $request['name'] = 'Anonymous';
+        }
+
+        //$name = $request->input('name', 'anonymous');
         
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
@@ -37,12 +41,12 @@ class UserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password), //$request->password, //Hash::make($request->password),
-        ])->assignRole($request->role);
+        ])->assignRole("user");
 
-        $roles = $user->getRoleNames();
+        //$roles = $user->getRoleNames();
 
         return response()->json(['message' => 'Successfully created user!',
-        'roles' => $roles,
+        //'roles' => $roles,
         ], 201);
     }
 
