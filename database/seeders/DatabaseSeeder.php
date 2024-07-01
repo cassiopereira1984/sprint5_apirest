@@ -17,6 +17,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call(UserSeeder::class);
 
+        $this->call(UserStadisticSeeder::class);
+
         User::factory(10)->create()->each(function($user){
             $user->assignRole('user');
         });

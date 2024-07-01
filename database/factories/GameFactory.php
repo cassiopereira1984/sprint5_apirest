@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 use App\Models\Game;
+use App\Models\User;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -15,10 +16,10 @@ class GameFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => \App\Models\User::factory(),
-            'die1' => $this->faker->numberBetween(1, 6),
-            'die2' => $this->faker->numberBetween(1, 6),
-            'win' => $this->faker->boolean,
+            'user_id' => User::inRandomOrder()->first()->id,
+            'dice1' => $this->faker->numberBetween(1, 6),
+            'dice2' => $this->faker->numberBetween(1, 6),
+            'win' => $this->faker->numberBetween(0, 1)
         ];
     }
 }
