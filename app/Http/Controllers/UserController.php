@@ -139,7 +139,7 @@ class UserController extends Controller
             $wins = $user->games->where('win', true)->count();
             $percentage = $totalGames ? ($wins / $totalGames) * 100 : 0;
             return [
-                'user' => $user,
+                'user' => $user->name,
                 'success_percentage' => $percentage,
             ];
         });
@@ -155,29 +155,43 @@ class UserController extends Controller
         }
 
         $winner = null;
-        $maxWins = 0;
+        $maxSuccessRate = 0;
         $ranking = [];
 
         foreach ($users as $user) {
+            $totalGames = $user->games->count();
             $wins = $user->games->where('win', true)->count();
+            $successPercentage = $totalGames > 0 ? ($wins / $totalGames) * 100 : 0;
 
-            if ($wins > $maxWins) {
-                $maxWins = $wins;
+            if ($successPercentage < $maxSuccessRate) {
+                $maxSuccessRate = $successPercentage;
                 $winner = $user;
-                $ranking[] = [$winner, $maxWins];
             }
+    
+            $ranking[] = [
+                'name' => $user->name,
+                'success_percentage' => $successPercentage
+            ];        
+
+            // if ($wins > $maxWins) {
+            //     $maxWins = $wins;
+            //     $winner = $user;
+            //     $ranking[] = [$winner, $maxWins];
+            // }
         }
 
-        $winsArray = array_column($ranking, 'maxWins');
+        // $sucessArray = array_column($ranking, 'success_percentage');
 
-        array_multisort($winsArray, SORT_DESC, $ranking);
+        // array_multisort($sucessArray, SORT_DESC, $ranking);
 
         if ($ranking) {
             return response()->json([
                 'winners' => [
                     //'name' => $winner->name,
                     //'wins' => $maxWins,
-                    'ranking' => $ranking,
+                    //'ranking' => $ranking,
+                    'loser_player' => $winner,
+                    'success_percentage' => $maxSuccessRate,
                 ],
                 'message' => 'Request successful',
             ], 200);
