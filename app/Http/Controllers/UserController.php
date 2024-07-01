@@ -113,6 +113,27 @@ class UserController extends Controller
         return response()->json($user, 200);
     }
 
+    public function getAllPlayers()
+    {
+        $user = User::all();
+        return response()->json(["users" => $user]);
+    }
+
+    public function getRanking()
+    {
+        $users = User::with('games')->get();
+        $rankings = $users->map(function ($user) {
+            $totalGames = $user->games->count();
+            $wins = $user->games->where('win', true)->count();
+            $percentage = $totalGames ? ($wins / $totalGames) * 100 : 0;
+            return [
+                'user' => $user,
+                'success_percentage' => $percentage,
+            ];
+        });
+        return response()->json($rankings, 200);
+    }
+
     public function getWinner()
     {
         $users = User::with('games')->get();
