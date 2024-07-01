@@ -149,48 +149,30 @@ class UserController extends Controller
     public function getWinner()
     {
         $users = User::with('games')->get();
-
+    
         if ($users->isEmpty()) {
             return response()->json(['error' => 'No players found'], 404);
         }
-
+    
         $winner = null;
         $maxSuccessRate = 0;
-        $ranking = [];
-
+    
         foreach ($users as $user) {
+            //if ($user != admin)  
             $totalGames = $user->games->count();
             $wins = $user->games->where('win', true)->count();
             $successPercentage = $totalGames > 0 ? ($wins / $totalGames) * 100 : 0;
 
-            if ($successPercentage < $maxSuccessRate) {
+            if ($successPercentage > $maxSuccessRate) {
                 $maxSuccessRate = $successPercentage;
                 $winner = $user;
             }
-    
-            $ranking[] = [
-                'name' => $user->name,
-                'success_percentage' => $successPercentage
-            ];        
-
-            // if ($wins > $maxWins) {
-            //     $maxWins = $wins;
-            //     $winner = $user;
-            //     $ranking[] = [$winner, $maxWins];
-            // }
         }
-
-        // $sucessArray = array_column($ranking, 'success_percentage');
-
-        // array_multisort($sucessArray, SORT_DESC, $ranking);
-
-        if ($ranking) {
+    
+        if ($winner) {
             return response()->json([
-                'winners' => [
-                    //'name' => $winner->name,
-                    //'wins' => $maxWins,
-                    //'ranking' => $ranking,
-                    'loser_player' => $winner,
+                'winner' => [
+                    'name' => $winner->name,
                     'success_percentage' => $maxSuccessRate,
                 ],
                 'message' => 'Request successful',
@@ -212,6 +194,7 @@ class UserController extends Controller
         $lowestSuccessRate = 101;
     
         foreach ($users as $user) {
+            //if($user es != admin)
             $totalGames = $user->games->count();
             $wins = $user->games->where('win', true)->count();
             $successRate = $totalGames > 0 ? ($wins / $totalGames) * 100 : 0;
