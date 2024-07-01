@@ -70,6 +70,12 @@ class GameController extends Controller
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
+        $games = User::find($id)->games;
+
+        if ($games->isEmpty()) {
+            return response(['message' => 'No tienes tirada tirada'], 200);
+        }
+
         return response()->json($user->games, 200);
     }
 }
