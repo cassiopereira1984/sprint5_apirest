@@ -119,46 +119,34 @@ class UserController extends Controller
         return response()->json(["users" => $user]);
     }
 
-    public function getRanking()
-    {
-        $users = User::with('games')->get();
-        $rankings = $users->map(function ($user) {
-            $totalGames = $user->games->count();
-            $wins = $user->games->where('win', true)->count();
-            $percentage = $totalGames ? ($wins / $totalGames) * 100 : 0;
-            return [
-                'user' => $user,
-                'success_percentage' => $percentage,
-            ];
-        });
-        return response()->json($rankings, 200);
-    }
-
     public function getWinner()
     {
         $users = User::with('games')->get();
-
+    
         if ($users->isEmpty()) {
             return response()->json(['error' => 'No players found'], 404);
         }
-
+    
         $winner = null;
-        $maxWins = 0;
-
+        $maxSuccessRate = 0;
+    
         foreach ($users as $user) {
+            //if ($user != admin)  
+            $totalGames = $user->games->count();
             $wins = $user->games->where('win', true)->count();
+            $successPercentage = $totalGames > 0 ? ($wins / $totalGames) * 100 : 0;
 
-            if ($wins > $maxWins) {
-                $maxWins = $wins;
+            if ($successPercentage > $maxSuccessRate) {
+                $maxSuccessRate = $successPercentage;
                 $winner = $user;
             }
         }
-
+    
         if ($winner) {
             return response()->json([
                 'winner' => [
                     'name' => $winner->name,
-                    'wins' => $maxWins,
+                    'success_percentage' => $maxSuccessRate,
                 ],
                 'message' => 'Request successful',
             ], 200);
